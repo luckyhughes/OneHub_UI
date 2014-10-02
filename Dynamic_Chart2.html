@@ -18,15 +18,17 @@
     	$.ajaxSetup( { "async": false } );
 	
 			 
-    	formattedForGraph = getJsonData("select * from AggregateMetrics");
+    	//formattedForGraph = getJsonData("select * from AggregateMetrics");
     	
-		$.ajaxSetup( { "async": true } );
-		console.log(formattedForGraph);
+		
+		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart([formattedForGraph[0]],"avg_response");
+    	plotchart("select responseTime from AggregateMetrics","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
+
+    	$.ajaxSetup( { "async": true } );
     	// }, 2000);
 		});
 
@@ -45,48 +47,44 @@
 		
 		$.getJSON(url, function(jsondata) {
 			
-			console.log(jsondata);		
+			//console.log(jsondata);		
 			
 		//var formattedForGraph = [];
 
-				for (var i = 0; i < 1; i++) {
+				for (var i = 2; i < jsondata[0].columns.length; i++) {
 					var seriesToPlot = {
 						name : jsondata[0].columns[i],
 						data : []
 					};
-					for (var j = 0; j < jsondata[0].points.length; j++)
-					 {
-						if(j==jsondata[0].points.length-1)
-						{
-							val=jsondata[0].points[j][i]+(Math.random()*100000+1);
-							seriesToPlot.data.push(val);
-						}
-						else
+					for (var j = 0; j < jsondata[0].points.length; j++) {
 						seriesToPlot.data.push(jsondata[0].points[j][i]);
-						//alert(jsondata[0].points[j][i]);
 					}
-					//alert(seriesToPlot);
 					formattedForGraph.push(seriesToPlot);
 				}
 	
 		});
 
-		console.log(formattedForGraph);
+		//console.log(formattedForGraph);
 		return formattedForGraph;
  }
 
 
-	function plotchart(formattedForGraph,divid){
+	function plotchart(query,divid){
 
 		titleText = "title";
 		divid = '#'+divid;
 		console.log(divid);
+
+		var formattedForGraph = getJsonData(query);
+
+		console.log(formattedForGraph);
 		
 		$(divid).highcharts(
 				{
-					 chart: {
-                type: 'line',
-                //animation: Highcharts.svg, // don't animate in old IE
+				
+				chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
                 events: {
                     load: function () {
@@ -94,58 +92,56 @@
                         // set up the updating of the chart each second
                         var series = this.series[0];
 						ttime=1411953240393;
-						axis=80;
+						axis=10;
                         setInterval(function () 
 						{
 							$.ajaxSetup( { "async": false } );
-                            formattedForGraph = getJsonData("select * from AggregateMetrics");
-                            $.ajaxSetup( { "async": true } );
-	                       	console.log(formattedForGraph);
-		//alert(formattedForGraph.length);
-		//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
-    	//plotchart([formattedForGraph[0]],"avg_response");
+                            formattedForGraph_pull = getJsonData(query);
+                            //$.ajaxSetup( { "async": true } );
+	                       	//console.log(formattedForGraph_pull);
+							
+							//alert(formattedForGraph.length);
+							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
+    						//plotchart([formattedForGraph[0]],"avg_response");
 							
 							
 							
-                            var x = ++axis, // current time
-                                y = formattedForGraph[0].data[formattedForGraph[0].data.length-1];
-                            series.addPoint([x, y], true, true);
+                            //var x = ++axis, // current time
+                                y = formattedForGraph_pull[0].data;
+
+                                console.log(y); 
+
+                                //.data[formattedForGraph[0].data.length-1];
+                            series.addPoint(y, true, true);
                        
 					   
-					    }, 1000);
+					    }, 10000);
                     }
                 }
             },
 					title : {
-						text : titleText,
-						x : 0
+						text : 'Performance Heath'
+						//x : 0
 					//center
 					
 					},
-					subtitle : {
-						text : 'Performance Heath',
-						x : 0
-					},
-					xAxis : {
-						title : {
-							text : 'Time (Units)'
-						},
-						plotLines : [ {
-							value : 0,
-							width : 1,
-							color : '#808080'
-						} ]
-					},
-					yAxis : {
-						title : {
-							text : 'Values'
-						},
-						plotLines : [ {
-							value : 0,
-							width : 1,
-							color : '#808080'
-						} ]
-					},
+
+					xAxis: {
+                		type: 'datetime',
+                		tickPixelInterval: 100
+            		},
+
+            		yAxis: {
+                		title: {
+                    	text: 'Value'
+                	},
+                	plotLines: [{
+                    	value: 0,
+                    	width: 1,
+                    	color: '#808080'
+                		}]
+            		},
+
 					tooltip : {
 						valueSuffix : ''
 					},
