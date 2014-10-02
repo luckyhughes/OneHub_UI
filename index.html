@@ -9,16 +9,25 @@
   <script type="text/javascript">
     $(document).ready(function()
     {
+		
+		
+	
 		$('button').click(function() {
-			
+		 setInterval(function () {	
     	console.log("Hello console");
     	$.ajaxSetup( { "async": false } );
+	
+			 
     	formattedForGraph = getJsonData("select * from AggregateMetrics");
-    	$.ajaxSetup( { "async": true } );
+    	
+		$.ajaxSetup( { "async": true } );
+		console.log(formattedForGraph);
+		//alert(formattedForGraph.length);
+		//alert(formattedForGraph[0].name=="bytesReceived");
     	plotchart([formattedForGraph[0]],"avg_response");
     	plotchart([formattedForGraph[1]],"network_throughput");
     	plotchart([formattedForGraph[2]],"sample_summary");
-    	
+    	 }, 1000);
 		});
 
     });
@@ -39,14 +48,15 @@
 			console.log(jsondata);		
 			
 		//var formattedForGraph = [];
-
-				for (var i = 2; i < jsondata[0].columns.length; i++) {
+   
+				for (var i = 0; i < jsondata[0].columns.length; i++) {
 					var seriesToPlot = {
 						name : jsondata[0].columns[i],
 						data : []
 					};
 					for (var j = 0; j < jsondata[0].points.length; j++) {
 						seriesToPlot.data.push(jsondata[0].points[j][i]);
+						//alert(jsondata[0].points[j][i]);
 					}
 					formattedForGraph.push(seriesToPlot);
 				}
