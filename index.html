@@ -11,13 +11,16 @@
     {
 		$('button').click(function() {
 			
-    	console.log("Hello console");
+    	/*console.log("Hello console");
     	$.ajaxSetup( { "async": false } );
     	formattedForGraph = getJsonData("select * from AggregateMetrics");
     	$.ajaxSetup( { "async": true } );
     	plotchart([formattedForGraph[0]],"avg_response");
     	plotchart([formattedForGraph[1]],"network_throughput");
     	plotchart([formattedForGraph[2]],"sample_summary");
+    	*/
+
+    	arraypush();
     	
 		});
 
@@ -25,6 +28,22 @@
  </script>
  
  <script>
+
+ function arraypush() {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -19; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: Math.random()
+                        });
+                    }
+                    console.log(data);
+                    return data;
+          }
 
  function getJsonData(query)
  {
