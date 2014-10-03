@@ -24,7 +24,7 @@
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select responseTime from AggregateMetrics limit 20","avg_response");
+    	plotchart("select * from AggregateMetrics limit 20","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -98,6 +98,7 @@
 
                         setInterval(function () 
 						{
+							query = "select * from AggregateMetrics limit 1"; 
 							$.ajaxSetup( { "async": false } );
                             formattedForGraph_pull = getJsonData(query);
                             //$.ajaxSetup( { "async": true } );
@@ -114,7 +115,7 @@
 							//series = series[i];
 
                             //var x = ++axis, // current time
-                                y = Math.random()*100;   //formattedForGraph_pull[2].data;
+                                y =  formattedForGraph_pull[i].data;
 
                                 console.log(y); 
 
