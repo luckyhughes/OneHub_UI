@@ -9,9 +9,6 @@
   <script type="text/javascript">
     $(document).ready(function()
     {
-		
-		
-	
 		$('button').click(function() {
 		/* setInterval(function () {	
     	console.log("Hello console");
@@ -36,7 +33,8 @@
  </script>
  
  <script>
-
+var mmin=0;
+var lmin=4;
  function getJsonData(query)
  {
 	 var url = "http://54.68.127.15:8086/db/performance/series?u=root&p=root&q="+ query;
@@ -54,19 +52,30 @@
 				for (var i = 0; i < 1; i++) {
 					var seriesToPlot = {
 						name : jsondata[0].columns[i],
-						data : []
+						data : [],
+						category: [],
+						x:[],
 					};
-					for (var j = 0; j < jsondata[0].points.length; j++)
+					//jsondata[0].points.length
+					for (var j = 0; j < 10; j++)
 					 {
-						if(j==jsondata[0].points.length-1)
+					//	if(j==jsondata[0].points.length-1)
 						{
-							val=jsondata[0].points[j][i]+(Math.random()*100000+1);
-							seriesToPlot.data.push(val);
+						//	val=jsondata[0].points[j][i]+(Math.random()*100000+1);
+					//		seriesToPlot.data.push(val);
 						}
-						else
-						seriesToPlot.data.push(jsondata[0].points[j][i]);
+					//	else{}
+					//	seriesToPlot.data.push(jsondata[0].points[j][i]);
+						seriesToPlot.data.push(Math.random()*100);
 						//alert(jsondata[0].points[j][i]);
+						seriesToPlot.x.push(new Date(jsondata[0].points[j][i]+mmin*1000));
+							seriesToPlot.category.push(new Date(jsondata[0].points[j][i]*1000));
+							
+							//if(mmin==60)
+						//	mmin=0;
 					}
+					lmin++;
+					mmin++;
 					//alert(seriesToPlot);
 					formattedForGraph.push(seriesToPlot);
 				}
@@ -97,6 +106,10 @@
 						x : 0
 					},
 					xAxis : {
+						type:'datetime',
+						dateTimeLabelFormats:{
+							day: '%H: %M: %S'
+						},
 						title : {
 							text : 'Time (Units)'
 						},
@@ -197,14 +210,12 @@
 			x: -20
 		},
 		xAxis : {
+			type:'datetime',
+			categories:[{}],
 						title : {
 							text : 'Time (Units)'
 						},
-						plotLines : [ {
-							value : 0,
-							width : 1,
-							color : '#808080'
-						} ]
+						
 					},
 		yAxis : {
 						title : {
@@ -221,11 +232,12 @@
                 var s = '<b>'+ this.x +'</b>';
                 
                 $.each(this.points, function(i, point) {
-                    s += '<br/>'+point.series.name+': '+point.y;
+                    s += '<br/>'+point.series.name+': '+parseInt(point.y);
                 });
                 
                 return s;
             },
+			  valueDecimals: 2,
             shared: true
         },
 	
@@ -251,27 +263,30 @@
 		
 	
 			options.series[0]=formattedForGraph[0];
-			
+		//	alert(formattedForGraph[0].category);
+			options.xAxis.categories=formattedForGraph[0].category;
 		//	options.series[0].data =formattedForGraph[0].data;			
-			
+			yy=formattedForGraph[0].category[3];
 				//options.series[1].name = 'Mohan';
 			//options.series[1].data = data.marks[1];
 			//options.series[1].name = 'Click';
 			//options.series[1].data = data.clicks;
 			var chart = new Highcharts.Chart(options);	
-				ttime=1411953240393;
-						axis=80;
+			
+						//axis=mmin;
 			setInterval(function ()
 			   {	
 			   	$.ajaxSetup( { "async": false } );
                  formattedForGraph = getJsonData("select * from AggregateMetrics");
                 $.ajaxSetup( { "async": true } );
 	        console.log(formattedForGraph);
-			      var x = ++axis, // current time
+			//alert(formattedForGraph[0].x[formattedForGraph[0].x.length-1]);
+			      var x =""+( formattedForGraph[0].x[formattedForGraph[0].x.length-1]), // current time
 				  
                y = formattedForGraph[0].data[formattedForGraph[0].data.length-1];
               chart.series[0].addPoint([x, y], true, true);
-			 }, 2000);	
+			 
+			 }, 1000);	
 		//alert(chart.series[0].points[0].y);
 		//alert(formattedForGraph[0].name=="bytesReceived");
     	//plotchart([formattedForGraph[0]],"avg_response");

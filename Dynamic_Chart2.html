@@ -24,7 +24,7 @@
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select responseTime from AggregateMetrics","avg_response");
+    	plotchart("select responseTime from AggregateMetrics limit 20","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -51,7 +51,7 @@
 			
 		//var formattedForGraph = [];
 
-				for (var i = 2; i < jsondata[0].columns.length; i++) {
+				for (var i = 0; i < jsondata[0].columns.length; i++) {
 					var seriesToPlot = {
 						name : jsondata[0].columns[i],
 						data : []
@@ -90,9 +90,12 @@
                     load: function () {
 
                         // set up the updating of the chart each second
-                        var series = this.series[0];
-						ttime=1411953240393;
-						axis=10;
+                        
+						//ttime=1411953240393;
+						//axis=10;
+
+						var series = this.series;
+
                         setInterval(function () 
 						{
 							$.ajaxSetup( { "async": false } );
@@ -104,18 +107,23 @@
 							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
     						//plotchart([formattedForGraph[0]],"avg_response");
 							
+
 							
-							
+							for ( i=0; i<formattedForGraph_pull.length; i++) {
+
+							//series = series[i];
+
                             //var x = ++axis, // current time
-                                y = formattedForGraph_pull[0].data;
+                                y = Math.random()*100;   //formattedForGraph_pull[2].data;
 
                                 console.log(y); 
 
                                 //.data[formattedForGraph[0].data.length-1];
-                            series.addPoint(y, true, true);
+                            series[i].addPoint(y, true, true);
+                        }
                        
 					   
-					    }, 10000);
+					    }, 2000);
                     }
                 }
             },
