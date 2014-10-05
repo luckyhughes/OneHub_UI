@@ -22,7 +22,7 @@
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select countResponseCode2xx from AggregateMetrics limit 20","avg_response");
+    	plotchart("select * from AggregateMetrics limit 20","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -82,7 +82,7 @@
 		//alert(category);
 		for(var i=0;i<formattedForGraph.length;i++)
 		{
-			if(formattedForGraph[i].name=="countResponseCode2xx")
+			if(formattedForGraph[i].name=="countResponseCode2xx")//||formattedForGraph[i].name=="countTotalThread"
 			{
 		var seriess = {
 						name : [],
@@ -129,6 +129,7 @@
                               // alert(formattedForGraph_pull);
 							
 							for ( i=0; i<formattedForGraph_pull.length; i++) {
+
 							//series = series[i];
                                 if(formattedForGraph_pull[i].name=="countResponseCode2xx")
 			                     {
@@ -136,20 +137,20 @@
 									  y =  formattedForGraph_pull[i].data;
 									//   y=5;
 									  //if(y==10)
-						 		  //y=5;
-									  console.log(y); 	
+									  //y=5;
+									   console.log(y); 
 									   //alert(y);
 									  // alert(series.length);
 									   var pos=0;
-									    for(j=0;j<series.length;j++)
+									   // for(j=0;j<series.length;j++)
 										{
-											if(series[j].name==formattedForGraph_pull[i].name)
-											pos=j;
+										//	if(series[j].name==formattedForGraph_pull[i].name)
+										//	pos=j;
 										}
 									//	if(pos==1)
 									//	y=3;
 									     // alert("positiopn:"+pos+" : val="+y);
-							   series[pos].addPoint([x,4], true, true);		  
+									     series[0].addPoint([x,4], true, true);
 			                       }
                             //var x = ++axis, // current time
                                

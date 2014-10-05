@@ -7,22 +7,18 @@
   <script type="text/javascript">
     $(document).ready(function()
     {
-		
-		
-	
 		$('button').click(function() {
 		//	 setInterval(function () {	
     	console.log("Hello console");
     	$.ajaxSetup( { "async": false } );
 	
-			 
     	//formattedForGraph = getJsonData("select * from AggregateMetrics");
     	
 		
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select countResponseCode2xx from AggregateMetrics limit 20","avg_response");
+    	plotchart("select * from AggregateMetrics limit 20","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -65,37 +61,34 @@
 		//console.log(formattedForGraph);
 		return formattedForGraph;
  }
-
+function convertTime(epoch)
+{
+	  var time=[];
+		for(var i=0;i<epoch.length;i++)
+		{
+	    var date=new Date(epoch[i]);
+	     time.push(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
+	  	}
+	return time;
+}
 
 	function plotchart(query,divid){
 
 		titleText = "title";
 		divid = '#'+divid;
 		console.log(divid);
-        var category=[];
-		var allseriess=[];
-		
+       var timestamp;
 		var formattedForGraph = getJsonData(query);
-           //alert(formattedForGraph[0].data);
+		
+	//	for(var i=0;i<formattedForGraph[0].data.length;i++)
+		//{
+			//tt=convertTime(formattedForGraph[0].data[i]);
+        	timestamp=convertTime(formattedForGraph[0].data);
+		     
+	//	}
+		//alert(timestamp[0]);
 		console.log(formattedForGraph);
-		category=formattedForGraph[0].data;  // time
-		//alert(category);
-		for(var i=0;i<formattedForGraph.length;i++)
-		{
-			if(formattedForGraph[i].name=="countResponseCode2xx")
-			{
-		var seriess = {
-						name : [],
-						data : []
-					};
-		seriess.name.push(formattedForGraph[i].name);
-		seriess.data=formattedForGraph[i].data;
-	        
-			allseriess.push(seriess);	
-			}
-		}
-		
-		
+	
 		$(divid).highcharts(
 				{
 				
@@ -105,15 +98,17 @@
                 marginRight: 10,
                 events: {
                     load: function () {
-
+                  this.xAxis[0].categories=timestamp;
+				  console.log(timestamp);
                         // set up the updating of the chart each second
                         
 						//ttime=1411953240393;
 						//axis=10;
 
 						var series = this.series;
-
-                        setInterval(function () 
+                       var xax=this.xAxis[0].categories;
+                      //  alert(xax);
+						setInterval(function () 
 						{
 							query = "select * from AggregateMetrics limit 1"; 
 							$.ajaxSetup( { "async": false } );
@@ -124,44 +119,23 @@
 							//alert(formattedForGraph.length);
 							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
     						//plotchart([formattedForGraph[0]],"avg_response");
-							  var x=""+formattedForGraph_pull[0].data;
-							  
-                              // alert(formattedForGraph_pull);
-							
+							var addtime=convertTime(formattedForGraph_pull[0].data);
+                             xax.push(addtime);
+							// var x=""+formattedForGraph_pull[0].data;
 							for ( i=0; i<formattedForGraph_pull.length; i++) {
 							//series = series[i];
-                                if(formattedForGraph_pull[i].name=="countResponseCode2xx")
-			                     {
-									// alert("value="+i+"  "+formattedForGraph_pull[i].name);
-									  y =  formattedForGraph_pull[i].data;
-									//   y=5;
-									  //if(y==10)
-						 		  //y=5;
-									  console.log(y); 	
-									   //alert(y);
-									  // alert(series.length);
-									   var pos=0;
-									    for(j=0;j<series.length;j++)
-										{
-											if(series[j].name==formattedForGraph_pull[i].name)
-											pos=j;
-										}
-									//	if(pos==1)
-									//	y=3;
-									     // alert("positiopn:"+pos+" : val="+y);
-							   series[pos].addPoint([x,4], true, true);		  
-			                       }
-                            //var x = ++axis, // current time
-                               
 
-                               
+                            //var x = ++axis, // current time
+                                y =  formattedForGraph_pull[i].data;
+
+                                console.log(y); 
 
                                 //.data[formattedForGraph[0].data.length-1];
-                          
+                            series[i].addPoint(y, true, true);
                         }
                        
 					   
-					    }, 1000);
+					    }, 5000);
                     }
                 }
             },
@@ -175,7 +149,7 @@
 					xAxis: {
                 		type: 'datetime',
                 		tickPixelInterval: 100,
-						categories:category,
+						categories: [],
             		},
 
             		yAxis: {
@@ -199,7 +173,7 @@
 						borderWidth : 0
 					},
 
-					series : allseriess
+					series : formattedForGraph
 				});}
 	</script>
     

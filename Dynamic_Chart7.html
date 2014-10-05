@@ -1,3 +1,5 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -22,7 +24,7 @@
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select countResponseCode2xx from AggregateMetrics limit 20","avg_response");
+    	plotchart("select responseTime from AggregateMetrics ","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -72,29 +74,10 @@
 		titleText = "title";
 		divid = '#'+divid;
 		console.log(divid);
-        var category=[];
-		var allseriess=[];
-		
+
 		var formattedForGraph = getJsonData(query);
-           //alert(formattedForGraph[0].data);
+
 		console.log(formattedForGraph);
-		category=formattedForGraph[0].data;  // time
-		//alert(category);
-		for(var i=0;i<formattedForGraph.length;i++)
-		{
-			if(formattedForGraph[i].name=="countResponseCode2xx")
-			{
-		var seriess = {
-						name : [],
-						data : []
-					};
-		seriess.name.push(formattedForGraph[i].name);
-		seriess.data=formattedForGraph[i].data;
-	        
-			allseriess.push(seriess);	
-			}
-		}
-		
 		
 		$(divid).highcharts(
 				{
@@ -107,15 +90,11 @@
                     load: function () {
 
                         // set up the updating of the chart each second
-                        
-						//ttime=1411953240393;
-						//axis=10;
-
-						var series = this.series;
-
+                        var series = this.series[0];
+						ttime=1411953240393;
+						axis=10;
                         setInterval(function () 
 						{
-							query = "select * from AggregateMetrics limit 1"; 
 							$.ajaxSetup( { "async": false } );
                             formattedForGraph_pull = getJsonData(query);
                             //$.ajaxSetup( { "async": true } );
@@ -124,44 +103,19 @@
 							//alert(formattedForGraph.length);
 							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
     						//plotchart([formattedForGraph[0]],"avg_response");
-							  var x=""+formattedForGraph_pull[0].data;
-							  
-                              // alert(formattedForGraph_pull);
 							
-							for ( i=0; i<formattedForGraph_pull.length; i++) {
-							//series = series[i];
-                                if(formattedForGraph_pull[i].name=="countResponseCode2xx")
-			                     {
-									// alert("value="+i+"  "+formattedForGraph_pull[i].name);
-									  y =  formattedForGraph_pull[i].data;
-									//   y=5;
-									  //if(y==10)
-						 		  //y=5;
-									  console.log(y); 	
-									   //alert(y);
-									  // alert(series.length);
-									   var pos=0;
-									    for(j=0;j<series.length;j++)
-										{
-											if(series[j].name==formattedForGraph_pull[i].name)
-											pos=j;
-										}
-									//	if(pos==1)
-									//	y=3;
-									     // alert("positiopn:"+pos+" : val="+y);
-							   series[pos].addPoint([x,4], true, true);		  
-			                       }
+							
+							
                             //var x = ++axis, // current time
-                               
+                                y = formattedForGraph_pull[0].data;
 
-                               
+                                console.log(y); 
 
                                 //.data[formattedForGraph[0].data.length-1];
-                          
-                        }
+                            series.addPoint(y, true, true);
                        
 					   
-					    }, 1000);
+					    }, 10000);
                     }
                 }
             },
@@ -174,8 +128,7 @@
 
 					xAxis: {
                 		type: 'datetime',
-                		tickPixelInterval: 100,
-						categories:category,
+                		tickPixelInterval: 100
             		},
 
             		yAxis: {
@@ -199,7 +152,7 @@
 						borderWidth : 0
 					},
 
-					series : allseriess
+					series : formattedForGraph
 				});}
 	</script>
     
@@ -218,3 +171,4 @@
 	
 </body>
 </html>
+\
