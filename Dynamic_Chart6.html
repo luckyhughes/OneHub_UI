@@ -284,7 +284,7 @@ var lmin=4;
 			      var x =""+( formattedForGraph[0].x[formattedForGraph[0].x.length-1]), // current time
 				  
                y = formattedForGraph[0].data[formattedForGraph[0].data.length-1];
-              chart.series[0].addPoint([x, y], true, true);
+              chart.series[0].addPoint(y, true, true);
 			 
 			 }, 1000);	
 		//alert(chart.series[0].points[0].y);

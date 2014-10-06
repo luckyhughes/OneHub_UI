@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -9,17 +7,22 @@
   <script type="text/javascript">
     $(document).ready(function()
     {
-		
-		
-	
 		$('button').click(function() {
 		//	 setInterval(function () {	
     	console.log("Hello console");
     	$.ajaxSetup( { "async": false } );
 	
-			 
-    	//formattedForGraph = getJsonData("select * from AggregateMetrics");
-    	
+    //	formattedForGraph = getJsonData("select * from AggregateMetrics");
+    //	 alert(formattedForGraph.length);
+	//	 $("#json1").html(formattedForGraph[0].name);
+	//	 $("#json2").html(formattedForGraph[1].name);
+	//	 $("#json3").html(formattedForGraph[2].name);
+	//	 $("#json4").html(formattedForGraph[3].name);
+	//	 $("#json5").html(formattedForGraph[4].name);
+	//	 $("#json6").html(formattedForGraph[5].name);
+	//	 $("#json7").html(formattedForGraph[6].name);
+	//	  $("#json8").html(formattedForGraph[7].name);
+	//	   $("#json9").html(formattedForGraph[8].name);
 		
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
@@ -47,17 +50,20 @@
 		
 		$.getJSON(url, function(jsondata) {
 			
-			//console.log(jsondata);		
-			
-		//var formattedForGraph = [];
-
-				for (var i = 0; i < jsondata[0].columns.length; i++) {
+	
+	        	var sname=new Array();
+			for (var i = 0; i < jsondata[0].columns.length; i++) 
+                       sname[i]= jsondata[0].columns[i];
+					   sname.sort();
+		
+	for (var i = 0; i < jsondata[0].columns.length; i++) {
+					var index=   jsondata[0].columns.indexOf(sname[i]);
 					var seriesToPlot = {
-						name : jsondata[0].columns[i],
+						name : jsondata[0].columns[index],
 						data : []
 					};
 					for (var j = 0; j < jsondata[0].points.length; j++) {
-						seriesToPlot.data.push(jsondata[0].points[j][i]);
+						seriesToPlot.data.push(jsondata[0].points[j][index]);
 					}
 					formattedForGraph.push(seriesToPlot);
 				}
@@ -67,18 +73,34 @@
 		//console.log(formattedForGraph);
 		return formattedForGraph;
  }
-
+function convertTime(epoch)
+{
+	  var time=[];
+		for(var i=0;i<epoch.length;i++)
+		{
+	    var date=new Date(epoch[i]);
+	     time.push(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
+	  	}
+	return time;
+}
 
 	function plotchart(query,divid){
 
 		titleText = "title";
 		divid = '#'+divid;
 		console.log(divid);
-
+       var timestamp;
 		var formattedForGraph = getJsonData(query);
-
-		console.log(formattedForGraph);
 		
+	//	for(var i=0;i<formattedForGraph[0].data.length;i++)
+		//{
+			//tt=convertTime(formattedForGraph[0].data[i]);
+        	timestamp=convertTime(formattedForGraph[8].data);
+		     
+	//	}
+		//alert(timestamp[0]);
+		console.log(formattedForGraph);
+	
 		$(divid).highcharts(
 				{
 				
@@ -88,15 +110,17 @@
                 marginRight: 10,
                 events: {
                     load: function () {
-
+                  this.xAxis[0].categories=timestamp;
+				  console.log(timestamp);
                         // set up the updating of the chart each second
                         
 						//ttime=1411953240393;
 						//axis=10;
 
 						var series = this.series;
-
-                        setInterval(function () 
+                       var xax=this.xAxis[0].categories;
+                      //  alert(xax);
+						setInterval(function () 
 						{
 							query = "select * from AggregateMetrics limit 1"; 
 							$.ajaxSetup( { "async": false } );
@@ -107,11 +131,10 @@
 							//alert(formattedForGraph.length);
 							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
     						//plotchart([formattedForGraph[0]],"avg_response");
-							
-
-							
+							var addtime=convertTime(formattedForGraph_pull[8].data);
+                             xax.push(addtime);
+							// var x=""+formattedForGraph_pull[0].data;
 							for ( i=0; i<formattedForGraph_pull.length; i++) {
-
 							//series = series[i];
 
                             //var x = ++axis, // current time
@@ -137,8 +160,8 @@
 
 					xAxis: {
                 		type: 'datetime',
-                		tickPixelInterval: 100
-                		categories : []
+                		tickPixelInterval: 100,
+						categories: [],
             		},
 
             		yAxis: {
@@ -172,12 +195,42 @@
 	
 	<button>Show Graph</button>
 	
-	
+	<table width="200" border="2" style="background-color:#999;">
+  <tr>
+    <td id="json1">&nbsp;</td>
+  </tr>
+  <tr>
+    <td id="json2">&nbsp;</td>
+  </tr>
+  <tr>
+    <td id="json3">&nbsp;</td>
+  </tr>
+  <tr>
+    <td id="json4">&nbsp;</td>
+  </tr>
+  <tr>
+    <td id="json5">&nbsp;</td>
+  </tr>
+  <tr>
+    <td id="json6">&nbsp;</td>
+  </tr>
+  <tr>
+    <td id="json7">&nbsp;</td>
+  </tr>
+   <tr>
+    <td id="json8">&nbsp;</td>
+  </tr>
+   <tr>
+    <td id="json9">&nbsp;</td>
+  </tr>
+</table>
+
 	 <div id="avg_response" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
 	 
 	 <div id="network_throughput" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
 	 
 	 <div id="sample_summary" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+     
 	
 </body>
 </html>
