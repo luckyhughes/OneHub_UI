@@ -20,7 +20,7 @@
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select * from AggregateMetrics limit 20","avg_response");
+    	plotchart("select * from AggregateMetrics limit 2","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -80,13 +80,13 @@ function convertTime(epoch)
 		titleText = "title";
 		divid = '#'+divid;
 		console.log(divid);
-       var timestamp;
+        var timestamp;
 		var formattedForGraph = getJsonData(query);
 		
 	//	for(var i=0;i<formattedForGraph[0].data.length;i++)
 		//{
 			//tt=convertTime(formattedForGraph[0].data[i]);
-        	timestamp=convertTime(formattedForGraph[0].data);
+        timestamp=convertTime(formattedForGraph[0].data);
 		     
 	//	}
 		//alert(timestamp[0]);
@@ -109,7 +109,7 @@ function convertTime(epoch)
 						//axis=10;
 
 						var series = this.series;
-                       var xax=this.xAxis[0].categories;
+                        var xax=this.xAxis[0].categories;
                       //  alert(xax);
 						setInterval(function () 
 						{
@@ -123,7 +123,8 @@ function convertTime(epoch)
 							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
     						//plotchart([formattedForGraph[0]],"avg_response");
 							var addtime=convertTime(formattedForGraph_pull[0].data);
-                             xax.push(addtime);
+                            xax.push(addtime);
+
 							// var x=""+formattedForGraph_pull[0].data;
 							for ( i=0; i<formattedForGraph_pull.length; i++) {
 							//series = series[i];
@@ -134,7 +135,8 @@ function convertTime(epoch)
                                 console.log(y); 
 
                                 //.data[formattedForGraph[0].data.length-1];
-                            series[i].addPoint(y, true, true);
+                            shift = series[i].data.length > 50;
+                            series[i].addPoint(y, true, shift);
                         }
                        
 					   
