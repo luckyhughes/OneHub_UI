@@ -101,7 +101,7 @@ function convertTime(epoch)
                 marginRight: 10,
                 events: {
                     load: function () {
-                  this.xAxis[0].categories=timestamp;
+                 // this.xAxis[0].categories=timestamp;
 				  console.log(timestamp);
                         // set up the updating of the chart each second
                         
@@ -111,6 +111,7 @@ function convertTime(epoch)
 						var series = this.series;
                         var xax=this.xAxis[0].categories;
                       //  alert(xax);
+					  var counter=0;
 						setInterval(function () 
 						{
 							query = "select * from AggregateMetrics limit 1"; 
@@ -123,7 +124,12 @@ function convertTime(epoch)
 							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
     						//plotchart([formattedForGraph[0]],"avg_response");
 							var addtime=convertTime(formattedForGraph_pull[0].data);
-                            xax.push(addtime);
+							  counter++;
+                            if(counter%12==0)
+							xax.push(addtime);
+							else
+							xax.push("");
+							
 
 							// var x=""+formattedForGraph_pull[0].data;
 							for ( i=0; i<formattedForGraph_pull.length; i++) {
@@ -135,10 +141,11 @@ function convertTime(epoch)
                                 console.log(y); 
 
                                 //.data[formattedForGraph[0].data.length-1];
-                            shift = series[i].data.length > 50;
+                            shift = series[i].data.length > 20;
                             series[i].addPoint(y, true, shift);
+						
                         }
-                       
+                        
 					   
 					    }, 5000);
                     }
@@ -154,7 +161,7 @@ function convertTime(epoch)
 					xAxis: {
                 		type: 'datetime',
                 		tickPixelInterval: 100,
-						categories: [],
+						categories: timestamp,
             		},
 
             		yAxis: {
