@@ -67,9 +67,12 @@
 function convertTime(epoch)
 {
 	  var time=[];
+	  var offset = (new Date).getTimezoneOffset()*60000;
+
 		for(var i=0;i<epoch.length;i++)
 		{
-	    var date=new Date(epoch[i]);
+	     var date=new Date(epoch[i] - offset); //get offset for local timezone and convert epoch time to localtime zone
+
 	     time.push(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
 	  	}
 	return time;
