@@ -86,8 +86,8 @@ function convertTime(epoch)
 	//	for(var i=0;i<formattedForGraph[0].data.length;i++)
 		//{
 			//tt=convertTime(formattedForGraph[0].data[i]);
-        timestamp=convertTime(formattedForGraph[0].data);
-		     
+        timestamp=convertTime(formattedForGraph[8].data);
+		  // alert(formattedForGraph[0].data);  
 	//	}
 		//alert(timestamp[0]);
 		console.log(formattedForGraph);
@@ -123,7 +123,7 @@ function convertTime(epoch)
 							//alert(formattedForGraph.length);
 							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
     						//plotchart([formattedForGraph[0]],"avg_response");
-							var addtime=convertTime(formattedForGraph_pull[0].data);
+							var addtime=convertTime(formattedForGraph_pull[8].data);
 							  counter++;
                             if(counter%12==0)
 							xax.push(addtime);

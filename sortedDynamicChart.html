@@ -110,7 +110,7 @@ function convertTime(epoch)
                 marginRight: 10,
                 events: {
                     load: function () {
-                  this.xAxis[0].categories=timestamp;
+                //  this.xAxis[0].categories=timestamp;
 				  console.log(timestamp);
                         // set up the updating of the chart each second
                         
@@ -161,7 +161,7 @@ function convertTime(epoch)
 					xAxis: {
                 		type: 'datetime',
                 		tickPixelInterval: 100,
-						categories: [],
+						categories: timestamp,
             		},
 
             		yAxis: {
@@ -195,7 +195,7 @@ function convertTime(epoch)
 	
 	<button>Show Graph</button>
 	
-	<table width="200" border="2" style="background-color:#999;">
+	<table width="200" border="2" style="background-color:#999;display:none">
   <tr>
     <td id="json1">&nbsp;</td>
   </tr>
