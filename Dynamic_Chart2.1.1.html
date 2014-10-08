@@ -50,7 +50,9 @@
 				for (var i = 0; i < jsondata[0].columns.length; i++) {
 					var seriesToPlot = {
 						name : jsondata[0].columns[i],
-						data : []
+						data : [],
+						   pointStart: Date.UTC(2010, 0, 1),   //here changes
+                     pointInterval: 24 * 3600 * 1000   // here  changes
 					};
 					for (var j = 0; j < jsondata[0].points.length; j++) {
 						seriesToPlot.data.push(jsondata[0].points[j][i]);
@@ -67,12 +69,9 @@
 function convertTime(epoch)
 {
 	  var time=[];
-	  var offset = (new Date).getTimezoneOffset()*60000;
-
 		for(var i=0;i<epoch.length;i++)
 		{
-	     var date=new Date(epoch[i] - offset); //get offset for local timezone and convert epoch time to localtime zone
-
+	    var date=new Date(epoch[i]);
 	     time.push(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
 	  	}
 	return time;
@@ -89,6 +88,7 @@ function convertTime(epoch)
 	//	for(var i=0;i<formattedForGraph[0].data.length;i++)
 		//{
 			//tt=convertTime(formattedForGraph[0].data[i]);
+			
         timestamp=convertTime(formattedForGraph[8].data);
 		  // alert(formattedForGraph[0].data);  
 	//	}
@@ -112,7 +112,7 @@ function convertTime(epoch)
 						//axis=10;
 
 						var series = this.series;
-                        var xax=this.xAxis[0].categories;
+                       // var xax=this.xAxis[0].categories;
                       //  alert(xax);
 					  var counter=0;
 						setInterval(function () 
@@ -120,6 +120,8 @@ function convertTime(epoch)
 							query = "select * from AggregateMetrics limit 1"; 
 							$.ajaxSetup( { "async": false } );
                             formattedForGraph_pull = getJsonData(query);
+							if(formattedForGraph_pull.length!=0) // here changes
+							{
                             //$.ajaxSetup( { "async": true } );
 	                       	//console.log(formattedForGraph_pull);
 							
@@ -129,10 +131,12 @@ function convertTime(epoch)
 							var addtime=convertTime(formattedForGraph_pull[8].data);
 							  counter++;
                             if(counter%12==0)
-							xax.push(addtime);
+							{
+						//	xax.push(addtime);
+							}
 							else
-							xax.push("");
-							
+							{//xax.push("");
+							}
 
 							// var x=""+formattedForGraph_pull[0].data;
 							for ( i=0; i<formattedForGraph_pull.length; i++) {
@@ -148,7 +152,9 @@ function convertTime(epoch)
                             series[i].addPoint(y, true, shift);
 						
                         }
-                        
+						
+							}
+							
 					   
 					    }, 5000);
                     }
@@ -162,9 +168,11 @@ function convertTime(epoch)
 					},
 
 					xAxis: {
-                		type: 'datetime',
-                		tickPixelInterval: 100,
-						categories: timestamp,
+                		    type: 'datetime',
+                      dateTimeLabelFormats: {  //here changes
+                           day: '%e of %b'},
+                		tickPixelInterval: 100, //here changes
+						//categories: timestamp,
             		},
 
             		yAxis: {
