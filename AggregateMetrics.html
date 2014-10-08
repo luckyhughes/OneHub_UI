@@ -98,7 +98,7 @@ function parseEpochTime(epoch)
 
 	                    	//extract timeseries only data from the seriesdataList in human readable format.
 							timeSeries=parseEpochTime(seriesdata[0].data);
-
+                          //   alert(seriesdata[0].name);
 							//push initial x axis data in categories.
 	                        var xseries=this.xAxis[0].categories;
 							xseries.push(timeSeries);
