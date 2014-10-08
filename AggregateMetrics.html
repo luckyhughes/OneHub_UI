@@ -14,7 +14,7 @@
     	$.ajaxSetup( { "async": false } );
 
     	//pass query to generate data and div id as where to display.
-    	plotchart("select * from AggregateMetrics limit 1","avg_response");
+    	plotchart("select * from AggregateMetrics where time > now() - 10s limit 1","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
 
     	$.ajaxSetup( { "async": true } );
@@ -34,9 +34,9 @@
 
 		console.log("ulr is:" + url);
 
-		$.ajax({
-			url: url,
-			success:function(jsondata) {
+		$.getJSON(url, function(jsondata) {
+
+			if(jsondata.length>0){
 
 				for (var i = 0; i < jsondata[0].columns.length; i++) {
 					
@@ -50,9 +50,8 @@
 					
 					highchartJson.push(seriesToPlot);
 				}
-
 			}	
-	
+
 		});
 
 		sortedJson = _.sortBy(highchartJson, 'name');
@@ -93,15 +92,17 @@ function parseEpochTime(epoch)
 	                    load: function () {
 
 	                        var counter=0;
-
+	                        var xseries=this.xAxis[0].categories;
 	                    	var yseries = this.series;
+	                    	console.log(yseries);
 
 	                    	//extract timeseries only data from the seriesdataList in human readable format.
-							timeSeries=parseEpochTime(seriesdata[0].data);
-                          //   alert(seriesdata[0].name);
-							//push initial x axis data in categories.
-	                        var xseries=this.xAxis[0].categories;
-							xseries.push(timeSeries);
+	                    	if(seriesdata.length>0){
+								timeSeries=parseEpochTime(seriesdata[0].data);
+
+								//push initial x axis data in categories
+								xseries.push(timeSeries);
+							}
 
 							setInterval(function () {
 								
@@ -110,26 +111,29 @@ function parseEpochTime(epoch)
 								//get highchart json data in name and data format from server
 	                    		seriesdata = getJsonData(query);
 
-	                    		//extract timeseries only data from the seriesdataList in human readable format.
-								timeSeries=parseEpochTime(seriesdata[0].data);
-								
-								//logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
-								counter++;
-	                            if(counter%12==0)
-									xseries.push(timeSeries);
-								else
-									xseries.push("");
-								
-								//append series data with data points for respective series
-								for ( i=0; i<seriesdata.length; i++) {
-								
-	                                datapoints =  seriesdata[i].data;
+	                    		if(seriesdata.length>0){
 
-									//shift y series if dataponits are more than a value (20)
-	                            	shift = yseries[i].data.length > 20;
+		                    		//extract timeseries only data from the seriesdataList in human readable format.
+									timeSeries=parseEpochTime(seriesdata[0].data);
+									
+									//logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
+									counter++;
+		                            if(counter%12==0)
+										xseries.push(timeSeries);
+									else
+										xseries.push("");
+									
+									//append series data with data points for respective series
+									for ( i=0; i<seriesdata.length; i++) {
+									
+		                                datapoints =  seriesdata[i].data;
 
-	                            	yseries[i].addPoint(datapoints, true, shift);
-	                        	}
+										//shift y series if dataponits are more than a value (20)
+		                            	shift = yseries[i].data.length > 20;
+
+		                            	yseries[i].addPoint(datapoints, true, shift);
+		                        	}
+		                        }	
 							
 	                        },3000);
 	                      }
