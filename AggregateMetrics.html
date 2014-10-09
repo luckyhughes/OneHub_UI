@@ -14,7 +14,7 @@
     	$.ajaxSetup( { "async": false } );
 
     	//pass query to generate data and div id as where to display.
-    	plotchart("select * from AggregateMetrics where time > now() - 10s limit 1","avg_response");
+    	plotchart("select * from AggregateMetrics where time > now() - 1000000000s limit 1","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
 
     	$.ajaxSetup( { "async": true } );
@@ -75,16 +75,17 @@ function parseEpochTime(epoch)
 
 	function plotchart(query,divid){
 
-		divid = '#'+divid;
+		//divid = '#'+divid;
 		console.log(divid);
+		var chart;
 
 		//get highchart json data in name and data format from server to initialize seriesdata
 	    var seriesdata = getJsonData(query);
 	
-		$(divid).highcharts(
-				{
+		chart = new Highcharts.Chart({
 				
 					chart: {
+					renderTo: divid,
 	                type: 'spline',
 	                animation: Highcharts.svg,
 	                marginRight: 10,
