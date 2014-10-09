@@ -14,7 +14,7 @@
     	$.ajaxSetup( { "async": false } );
 
     	//pass query to generate data and div id as where to display.
-    	plotchart("select * from AggregateMetrics where time > now() - 1000000000s limit 1","avg_response");
+    	plotchart("select responseTime from AggregateMetrics where time > now() - 1000000000s limit 20","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
 
     	$.ajaxSetup( { "async": true } );
@@ -58,6 +58,7 @@
 		//console.log(sortedJson);
 		return sortedJson;
  }
+ 
 
 function parseEpochTime(epoch)
 {
@@ -81,100 +82,118 @@ function parseEpochTime(epoch)
 
 		//get highchart json data in name and data format from server to initialize seriesdata
 	    var seriesdata = getJsonData(query);
-	
-		chart = new Highcharts.Chart({
-				
-					chart: {
+		
+		
+	 var options = {
+           chart: {
 					renderTo: divid,
 	                type: 'spline',
 	                animation: Highcharts.svg,
 	                marginRight: 10,
-	                events: {
-	                    load: function () {
-
-	                        var counter=0;
-	                        var xseries=this.xAxis[0].categories;
-	                    	var yseries = this.series;
-	                    	console.log(yseries);
-
-	                    	//extract timeseries only data from the seriesdataList in human readable format.
-	                    	if(seriesdata.length>0){
-								timeSeries=parseEpochTime(seriesdata[0].data);
-
-								//push initial x axis data in categories
-								xseries.push(timeSeries);
-							}
-
-							setInterval(function () {
+              },
+           title: {
+            text: 'Performance Heath'
+              }, 
+           xAxis: {
+               		type: 'datetime',        		
+				    categories:[],
+            	},
+      	   yAxis: {
+                		title: {
+                    	text: 'Value'
+                },
+           plotLines: [{
+                    	value: 0,
+                    	width: 1,
+                    	color: '#808080'
+                		}]
+            	},
+    	   tooltip : {
+						valueSuffix : ''
+				},
+		   legend : {
+						layout : 'vertical',
+						align : 'right',
+						verticalAlign : 'middle',
+						borderWidth : 0
+				},
+    	   series : seriesdata
+    };
+	//activate variable use to check the highchart is activated or not
+	activate=0;  
+	var chart;
+	// check the HighChart have Series or not
+	if(options.series.length!=0)               
+		{
+			timeStamp=parseEpochTime(seriesdata[2].data);   
+			// asign the time in xAxis 
+			options.xAxis.categories=timeStamp;  
+			// create the object  
+		    chart = new Highcharts.Chart(options);  
+		   //update Activate for that chart is activated
+		activate=1;
+		
+		}
+		  var counter=0;
+		setInterval(function () {
 								
 								$.ajaxSetup( { "async": false } );
 
 								//get highchart json data in name and data format from server
-	                    		seriesdata = getJsonData(query);
-
-	                    		if(seriesdata.length>0){
-
-		                    		//extract timeseries only data from the seriesdataList in human readable format.
-									timeSeries=parseEpochTime(seriesdata[0].data);
+								seriesdata = getJsonData(query);
+                           		if(seriesdata.length>0){
 									
-									//logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
+									      // check the chart is activate or not
+                                              if(activate==0)   
+											  {  
+												  
+												  
+												  //Asign the Time to Xaxis 
+												  	timeStamp=parseEpochTime(seriesdata[2].data);
+			                                         options.xAxis.categories=timeStamp;
+													 // Asign the Series to Chart
+													 options.series=seriesdata;
+													 
+												  chart = new Highcharts.Chart(options);
+												  activate=1;
+												
+											  }
+											  else
+											  {
+								//In this else part we append series data with data points for respective series
+												
+	                                              var xseries=chart.xAxis[0].categories;
+	                    	                      var yseries = chart.series;
+	                    	                      console.log(yseries);
+												  
+                                                  timeSeries=parseEpochTime(seriesdata[2].data);
+				            
+														   
+			//logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
 									counter++;
 		                            if(counter%12==0)
-										xseries.push(timeSeries);
+										xseries.push(timeSeries[0]);
 									else
 										xseries.push("");
 									
 									//append series data with data points for respective series
 									for ( i=0; i<seriesdata.length; i++) {
 									
-		                                datapoints =  seriesdata[i].data;
+		                                datapoints =  seriesdata[i].data[0];
 
 										//shift y series if dataponits are more than a value (20)
 		                            	shift = yseries[i].data.length > 20;
 
 		                            	yseries[i].addPoint(datapoints, true, shift);
 		                        	}
+												
+												
+											  }
+		                    		//extract timeseries only data from the seriesdataList in human readable format.
+								
 		                        }	
 							
-	                        },3000);
-	                      }
-	                    }
-	                },
-
-					title : {
-						text : 'Performance Heath'
-					},
-
-					xAxis: {
-                		type: 'datetime',
-                		//tickPixelInterval: 100,
-						categories: [],
-            		},
-
-            		yAxis: {
-                		title: {
-                    	text: 'Value'
-                	},
-                	plotLines: [{
-                    	value: 0,
-                    	width: 1,
-                    	color: '#808080'
-                		}]
-            		},
-
-					tooltip : {
-						valueSuffix : ''
-					},
-					legend : {
-						layout : 'vertical',
-						align : 'right',
-						verticalAlign : 'middle',
-						borderWidth : 0
-					},
-
-					series : seriesdata
-				});
-			
+	                        },5000);
 		}
 	</script>
     
