@@ -46,22 +46,21 @@
 			//console.log(jsondata);		
 			
 		//var formattedForGraph = [];
-        var sname=new Array(); //Give initialy one value !!
+        var sname=new Array(); //Array that Contain the name of All series !!
 		var tindex=jsondata[0].columns.indexOf("time"); // get the index of time series
 		sname[0]=jsondata[0].columns[tindex];
-		var sindex=jsondata[0].columns.indexOf("TransactionName");  //get index of name of series
-	    var r=1;	for(i=0;i< jsondata[0].points.length; i++)  //this loop get the series name from the points
+		var sindex=jsondata[0].columns.indexOf("TransactionName");  //Get Index column that contain Series Name
+	    var r=1;	for(i=0;i< jsondata[0].points.length; i++)  //this loop get the Name of Series
 		  {
 		    var name=jsondata[0].points[i][sindex];
 			if(sname.indexOf(name)==-1)
 			{
-				//alert("in");
-			sname[r]=name;
-			r++;
+			 sname[r]=name;
+			 r++;
 			}
 		  }
-		//alert (sname);
-			var seriesToPlot=[];
+		
+		var seriesToPlot=[];
 		for (var i = 0; i < sname.length; i++) {
 					seriesName = {
 						name : sname[i],
@@ -69,19 +68,18 @@
 					};
 					seriesToPlot.push(seriesName);
 		}
-
 			
 		var dindex=jsondata[0].columns.indexOf("SampleResponseTime"); 	
 			
 			r=1;
 			for (var j = 0; j < jsondata[0].points.length; j++)
 			{
-				seriesToPlot[0].data.push(jsondata[0].points[j][tindex]);
-				var vindex=sname.indexOf(jsondata[0].points[j][sindex]);
+				seriesToPlot[0].data.push(jsondata[0].points[j][tindex]);// add the time in first series that show on xaxis
+				var vindex=sname.indexOf(jsondata[0].points[j][sindex]); // get the Series Index
 				seriesToPlot[vindex].data.push(jsondata[0].points[j][dindex]);
 			}
 				
-	 // for (var j = 0; j < seriesToPlot.length; j++)
+
 	  	   formattedForGraph=seriesToPlot; 
 		});
 
@@ -89,7 +87,7 @@
 		console.log(sortedJson);
 		return sortedJson;
  }
-function convertTime(epoch)
+function parseEpochTime(epoch)
 {
 	  var time=[];
 		for(var i=0;i<epoch.length;i++)
@@ -100,141 +98,144 @@ function convertTime(epoch)
 	return time;
 }
 
-	function plotchart(query,divid){
-
-		titleText = "title";
-		divid = '#'+divid;
+   
+function plotchart(query,divid){
+    titleText = "title";
+		//divid = '#'+divid;
 		console.log(divid);
         var timeSeries;
-		var formattedForGraph = getJsonData(query);
-		
-	//	for(var i=0;i<formattedForGraph[0].data.length;i++)
-		//{
-			//tt=convertTime(formattedForGraph[0].data[i]);
-        timeSeries=convertTime(formattedForGraph[2].data);
-		     
-	//	}
-		//alert(timestamp[0]);
-		console.log(formattedForGraph);
 	
-		$(divid).highcharts(
-				{
-				
-				chart: {
-                type: 'spline',
-                animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 10,
-                events: {
-                    load: function () {
-                 // this.xAxis[0].categories=timestamp;
-				  console.log(timeSeries);
-                        // set up the updating of the chart each second
-                        
-						//ttime=1411953240393;
-						//axis=10;
-                         shift=false;
-						//	xseries.push(timeSeries);
-						this.xAxis[0].categories=timeSeries;
-						var series = this.series;
-                       var xseries=this.xAxis[0].categories;
-                      //  alert(xax);
-					  var counter=0;
-					setInterval(function () 
-						{
-							query = "select SampleResponseTime,TransactionName  from TransactionMetrics limit 20"; 
-							$.ajaxSetup( { "async": false } );
-                            formattedForGraph_pull = getJsonData(query);
-                            //$.ajaxSetup( { "async": true } );
-	                       	//console.log(formattedForGraph_pull);
-							
-							//alert(formattedForGraph.length);
-							//alert(formattedForGraph[0].data[formattedForGraph[0].data.length-1]);
-    						//plotchart([formattedForGraph[0]],"avg_response");
-							var addtime=convertTime(formattedForGraph_pull[2].data);
-							console.log("Time is:"+addtime[0]);
-							//console.log("now Time  is:"+formattedForGraph_pull[0].data);
-							  counter++;
-                          //  if(counter%12==0)
-						 // alert(series.length);
-							xseries.push(addtime[0]);
-							//else
-							//xax.push("");
-							//shift=false;
-                           if(shift==false)
-						   {
-							   check=0;
-							     for(var i=0;i<series.length;i++)
-								 {
-									 if(series[i].data.length>=20)
-									 check++;
-								 }
-								if(check== series.length)
-								shift=true;
-								
-						   }
-						    
-						
-						
-							// var x=""+formattedForGraph_pull[0].data;
-							for ( i=0; i<formattedForGraph_pull.length; i++)
-							 {
-							//series = series[i];
+		 var seriesdata = getJsonData(query);
 
-                            //var x = ++axis, // current time
-                                y =  formattedForGraph_pull[i].data[0];
-
-                                console.log(y); 
-
-                                //.data[formattedForGraph[0].data.length-1];
-								//if(shift==false)
-								   // shift=counter>=20?true:false;
-								console.log(shift);
-                            //shift = series[i].data.length > 20;
-                            series[i].addPoint(y, true, shift);
-						
-                        }
-                        
-					   
-					    }, 1000);
-                    }
-                }
-            },
-					title : {
-						text : 'Performance Heath'
-						//x : 0
-					//center
-					
-					},
-
-					xAxis: {
-                		type: 'datetime',
-                		tickPixelInterval: 1000,
-						categories: [],
-            		},
-
-            		yAxis: {
+		
+		
+	 var options = {
+           chart: {
+					renderTo: divid,
+	                type: 'spline',
+	                animation: Highcharts.svg,
+	                marginRight: 10,
+              },
+           title: {
+            text: 'Performance Heath'
+              }, 
+           xAxis: {
+               		type: 'datetime',        		
+				    categories:[],
+            	},
+      	   yAxis: {
                 		title: {
                     	text: 'Value'
-                	},
-                	plotLines: [{
+                },
+           plotLines: [{
                     	value: 0,
                     	width: 1,
                     	color: '#808080'
                 		}]
-            		},
-
-					tooltip : {
+            	},
+    	   tooltip : {
 						valueSuffix : ''
-					},
-					legend : {
+				},
+		   legend : {
 						layout : 'vertical',
 						align : 'right',
 						verticalAlign : 'middle',
 						borderWidth : 0
-					},
+				},
+    	   series : seriesdata
+    };
+	//activate variable use to check the highchart is activated or not
+	activate=0;  
+	var chart;
+	// check the HighChart have Series or not
+	if(options.series.length!=0)               
+		{
+			timeStamp=parseEpochTime(seriesdata[2].data);   
+			// asign the time in xAxis 
+			options.xAxis.categories=timeStamp;  
+			// create the object  
+		    chart = new Highcharts.Chart(options);  
+		   //update Activate for that chart is activated
+		activate=1;
+		
+		}
+		  var counter=0;
+		  var shift=false;
+		setInterval(function () {
+								
+								$.ajaxSetup( { "async": false } );
 
-					series : formattedForGraph
-				});}
+								//get highchart json data in name and data format from server
+								seriesdata = getJsonData(query);
+                           		if(seriesdata.length>0){
+									
+									      // check the chart is activate or not
+                                              if(activate==0)   
+											  {  
+												  
+												  
+												  //Asign the Time to Xaxis 
+												  	timeStamp=parseEpochTime(seriesdata[2].data);
+			                                         options.xAxis.categories=timeStamp;
+													 // Asign the Series to Chart
+													 options.series=seriesdata;
+													 
+												  chart = new Highcharts.Chart(options);
+												  activate=1;
+												
+											  }
+											  else
+											  {
+								//In this else part we append series data with data points for respective series
+												
+	                                              var xseries=chart.xAxis[0].categories;
+	                    	                      var yseries = chart.series;
+	                    	                      console.log(yseries);
+												  
+                                                  timeSeries=parseEpochTime(seriesdata[2].data);
+				            
+														   
+			//logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
+									counter++;
+		                            if(counter%12==0)
+										xseries.push(timeSeries[0]);
+									else
+										xseries.push("");
+									
+						if(shift==false)
+						   {
+							   check=0;
+							     for(var i=0;i<yseries.length;i++)
+								 {
+									 if(yseries[i].data.length>=20)
+									 check++;
+								 }
+								if(check== yseries.length)
+								shift=true;
+								
+						   }
+						    	
+									
+									
+									//append series data with data points for respective series
+									for ( i=0; i<seriesdata.length; i++) {
+									
+		                                datapoints =  seriesdata[i].data[0];
+
+										//shift y series if dataponits are more than a value (20)
+		                            	//shift = yseries[i].data.length > 20;
+
+		                            	yseries[i].addPoint(datapoints, true, shift);
+		                        	}
+												
+												
+											  }
+		                    		//extract timeseries only data from the seriesdataList in human readable format.
+								
+		                        }	
+							
+	                        },5000);
+	}
 	</script>
     
  </head>  
