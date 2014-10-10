@@ -48,15 +48,14 @@
 		//var formattedForGraph = [];
         var sname=new Array(); //Array that Contain the name of All series !!
 		var tindex=jsondata[0].columns.indexOf("time"); // get the index of time series
-		sname[0]=jsondata[0].columns[tindex];
+		sname.push(jsondata[0].columns[tindex]);
 		var sindex=jsondata[0].columns.indexOf("TransactionName");  //Get Index column that contain Series Name
-	    var r=1;	for(i=0;i< jsondata[0].points.length; i++)  //this loop get the Name of Series
+	    	for(i=0;i< jsondata[0].points.length; i++)  //this loop get the Name of Series
 		  {
 		    var name=jsondata[0].points[i][sindex];
 			if(sname.indexOf(name)==-1)
 			{
-			 sname[r]=name;
-			 r++;
+			 sname.push(name);
 			}
 		  }
 		
@@ -71,7 +70,7 @@
 			
 		var dindex=jsondata[0].columns.indexOf("SampleResponseTime"); 	
 			
-			r=1;
+			
 			for (var j = 0; j < jsondata[0].points.length; j++)
 			{
 				seriesToPlot[0].data.push(jsondata[0].points[j][tindex]);// add the time in first series that show on xaxis
