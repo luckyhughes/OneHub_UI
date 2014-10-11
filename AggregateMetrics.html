@@ -62,14 +62,14 @@
 
 function parseEpochTime(epoch)
 {
-	  var time=[];
-	  var offset = (new Date).getTimezoneOffset()*60000;
+	   var time=[];
+	   var offset = (new Date).getTimezoneOffset()*60000;
 
 		for(var i=0;i<epoch.length;i++)
 		{
-	     var date=new Date(epoch[i] - offset); //get offset for local timezone and convert epoch time to localtime zone
+	      var date=new Date(epoch[i] - offset); //get offset for local timezone and convert epoch time to localtime zone
 
-	     time.push(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
+	      time.push(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
 	  	}
 	return time;
 }
@@ -84,7 +84,7 @@ function parseEpochTime(epoch)
 	    var seriesdata = getJsonData(query);
 		
 		
-	 var options = {
+	    var options = {
            chart: {
 					renderTo: divid,
 	                type: 'spline',
@@ -118,7 +118,7 @@ function parseEpochTime(epoch)
 						borderWidth : 0
 				},
     	   series : seriesdata
-    };
+        };
 	//activate variable use to check the highchart is activated or not
 	activate=0;  
 	var chart;
@@ -131,28 +131,27 @@ function parseEpochTime(epoch)
 			// create the object  
 		    chart = new Highcharts.Chart(options);  
 		   //update Activate for that chart is activated
-		activate=1;
+		    activate=1;
 		
 		}
-		  var counter=0;
-		setInterval(function () {
+		  
+	var counter=0;
+	setInterval(function () {
 								
-								$.ajaxSetup( { "async": false } );
+							$.ajaxSetup( { "async": false } );
 
-								//get highchart json data in name and data format from server
-								seriesdata = getJsonData(query);
-                           		if(seriesdata.length>0){
+						    //get highchart json data in name and data format from server
+							seriesdata = getJsonData(query);
+                           	if(seriesdata.length>0){
 									
-									      // check the chart is activate or not
-                                              if(activate==0)   
+							   // check the chart is activate or not
+                                   if(activate==0)   
 											  {  
-												  
-												  
 												  //Asign the Time to Xaxis 
-												  	timeStamp=parseEpochTime(seriesdata[2].data);
-			                                         options.xAxis.categories=timeStamp;
-													 // Asign the Series to Chart
-													 options.series=seriesdata;
+												  timeStamp=parseEpochTime(seriesdata[2].data);
+			                                      options.xAxis.categories=timeStamp;
+												  // Asign the Series to Chart
+												  options.series=seriesdata;
 													 
 												  chart = new Highcharts.Chart(options);
 												  activate=1;
@@ -160,40 +159,35 @@ function parseEpochTime(epoch)
 											  }
 											  else
 											  {
-								//In this else part we append series data with data points for respective series
+								                  //In this else part we append series data with data points for respective series
 												
 	                                              var xseries=chart.xAxis[0].categories;
 	                    	                      var yseries = chart.series;
 	                    	                      console.log(yseries);
 												  
                                                   timeSeries=parseEpochTime(seriesdata[2].data);
-				            
-														   
-			//logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
-									counter++;
-		                            if(counter%12==0)
-										xseries.push(timeSeries[0]);
-									else
-										xseries.push("");
-									
-									//append series data with data points for respective series
-									for ( i=0; i<seriesdata.length; i++) {
-									
-		                                datapoints =  seriesdata[i].data[0];
-
-										//shift y series if dataponits are more than a value (20)
-		                            	shift = yseries[i].data.length > 20;
-
-		                            	yseries[i].addPoint(datapoints, true, shift);
-		                        	}
+				            				   
+											      //logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
+												  counter++;
+					                              if(counter%12==0)
+													xseries.push(timeSeries[0]);
+												  else
+													xseries.push("");
 												
+												  //append series data with data points for respective series
+												  for ( i=0; i<seriesdata.length; i++) {
 												
-											  }
-		                    		//extract timeseries only data from the seriesdataList in human readable format.
-								
-		                        }	
+					                                datapoints =  seriesdata[i].data[0];
+
+													//shift y series if dataponits are more than a value (20)
+					                            	shift = yseries[i].data.length > 20;
+
+					                            	yseries[i].addPoint(datapoints, true, shift);
+					                        	  }
+					  						   }
+		                       }	
 							
-	                        },5000);
+	                       },5000);
 		}
 	</script>
     
