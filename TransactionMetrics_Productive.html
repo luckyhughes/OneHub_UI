@@ -16,13 +16,11 @@
 	
     	//formattedForGraph = getJsonData("select * from AggregateMetrics");
     	
-	//	var query="select SampleResponseTime,TransactionName  from TransactionMetrics limit 20";
-	//	seriesData=getJsonData2(query);
-	//	alert(seriesData.data[0].name);
+		
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics where time > now() - 10s limit 20","avg_response");
+    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics limit 20","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -34,72 +32,77 @@
  </script>
  
  <script>
+
  function getJsonData(query)
  {
 	 var url = "http://54.68.127.15:8086/db/performance/series?u=root&p=root&q="+ query;
- //this json object have time and value . Time contain values of time show on xAxis. value maintain  the series data. 
-	 var formattedForGraph ={
-		    time:[],
-			value:[]
-		 };
+
+	 var formattedForGraph =[];
 
 		console.log("ulr is:" + url);
 		
 		$.getJSON(url, function(jsondata) {
 			
-				
-		if(jsondata.length>0){	
+			//console.log(jsondata);		
+			if(jsondata.length>0)
+			{
 		//var formattedForGraph = [];
         var sname=new Array(); //Array that Contain the name of All series !!
-		var tindex=jsondata[0].columns.indexOf("time"); // get the index of time series
-	
-		var sindex=jsondata[0].columns.indexOf("TransactionName");  //Get Index column that contain Series Name
-	    var r=0;	for(i=0;i< jsondata[0].points.length; i++)  //this loop get the Name of Series
+		var time_Index=jsondata[0].columns.indexOf("time"); // get the index of time series
+		var squance_Number_Index=jsondata[0].columns.indexOf("sequence_number");
+		sname.push(jsondata[0].columns[time_Index]);
+		var series_Name_index=jsondata[0].columns.indexOf("TransactionName");  //Get Index column that contain Series Name
+	  	for(i=0;i< jsondata[0].points.length; i++)  //this loop get the Name of Series
 		  {
-		    var name=jsondata[0].points[i][sindex];
-			if(sname.indexOf(name)==-1)
+		    var seriesName=jsondata[0].points[i][series_Name_index];
+			if(sname.indexOf(seriesName)==-1)
 			{
-			 sname[r]=name;
-			 r++;
+			 sname.push(seriesName);
+			 
 			}
 		  }
-		
-		
-		var timeseriesToPlot=new Array();
-					
-		
-		
+	
 		var seriesToPlot=[];
 		for (var i = 0; i < sname.length; i++) {
+			flag=true;
+			if(sname[i]=="time")
+			  flag=false;
 					seriesName = {
 						name : sname[i],
-						data : []
+						data : [],
+							visible: flag,
+						showInLegend: flag
 					};
 					seriesToPlot.push(seriesName);
 		}
-			
-		var dindex=jsondata[0].columns.indexOf("SampleResponseTime"); 	
+		
+		//get the index of column that contain data
+		var seriesDataName=new Array();
+		for(var d=0;d<jsondata[0].columns.length;d++)
+		{
+			if(d!=time_Index&&d!=squance_Number_Index&&d!=series_Name_index)
+			seriesDataName.push(jsondata[0].columns[d]);
+		}
+		
+		var data_Index=jsondata[0].columns.indexOf(seriesDataName[0]); 	
 			
 			r=1;
 			for (var j = 0; j < jsondata[0].points.length; j++)
 			{
-				timeseriesToPlot[j]=jsondata[0].points[j][tindex];// add the time in first series that show on xaxis
-				var vindex=sname.indexOf(jsondata[0].points[j][sindex]); // get the Series Index
-				seriesToPlot[vindex].data.push(jsondata[0].points[j][dindex]);
+				seriesToPlot[0].data.push(jsondata[0].points[j][time_Index]);// add the time in first series that show on xaxis
+				var vindex=sname.indexOf(jsondata[0].points[j][series_Name_index]); // get the Series Index
+				seriesToPlot[vindex].data.push(jsondata[0].points[j][data_Index]);
 			}
 				
-           formattedForGraph.time=timeseriesToPlot;
-		   
-		   var sortedJson = _.sortBy(seriesToPlot, 'name');
-	  	   formattedForGraph.value=sortedJson;
-	  	   } 
+
+	  	   formattedForGraph=seriesToPlot; 
+			}
 		});
 
-		//var sortedJson = _.sortBy(formattedForGraph, 'name');
-		console.log(formattedForGraph);
-		return formattedForGraph;
+		var sortedJson = _.sortBy(formattedForGraph, 'name');
+		console.log(sortedJson);
+		return sortedJson;
  }
-
 function parseEpochTime(epoch)
 {
 	  var time=[];
@@ -155,7 +158,7 @@ function plotchart(query,divid){
 						verticalAlign : 'middle',
 						borderWidth : 0
 				},
-    	   series : seriesdata.value
+    	   series : seriesdata
     };
 	//activate variable use to check the highchart is activated or not
 	activate=0;  
@@ -163,7 +166,7 @@ function plotchart(query,divid){
 	// check the HighChart have Series or not
 	if(options.series.length!=0)               
 		{
-			timeStamp=parseEpochTime(seriesdata.time);   
+			timeStamp=parseEpochTime(seriesdata[2].data);   
 			// asign the time in xAxis 
 			options.xAxis.categories=timeStamp;  
 			// create the object  
@@ -180,7 +183,7 @@ function plotchart(query,divid){
 
 								//get highchart json data in name and data format from server
 								seriesdata = getJsonData(query);
-                           		if(seriesdata.value.length>0){
+                           		if(seriesdata.length>0){
 									
 									      // check the chart is activate or not
                                               if(activate==0)   
@@ -188,10 +191,10 @@ function plotchart(query,divid){
 												  
 												  
 												  //Asign the Time to Xaxis 
-												  	timeStamp=parseEpochTime(seriesdata.time);
+												  	timeStamp=parseEpochTime(seriesdata[2].data);
 			                                         options.xAxis.categories=timeStamp;
 													 // Asign the Series to Chart
-													 options.series=seriesdata.value;
+													 options.series=seriesdata;
 													 
 												  chart = new Highcharts.Chart(options);
 												  activate=1;
@@ -205,7 +208,7 @@ function plotchart(query,divid){
 	                    	                      var yseries = chart.series;
 	                    	                      console.log(yseries);
 												  
-                                                  timeSeries=parseEpochTime(seriesdata.time);
+                                                  timeSeries=parseEpochTime(seriesdata[2].data);
 				            
 														   
 			//logic to update xaxis timeseries data on chart every minute considering interval is 5 sec (5*12)
@@ -228,12 +231,12 @@ function plotchart(query,divid){
 								
 						   }
 						    	
-								
-									console.log(seriesdata.value);
-									//append series data with data points for respective series
-									for ( i=0; i<seriesdata.value.length; i++) {
 									
-		                                datapoints =  seriesdata.value[i].data[0];
+									
+									//append series data with data points for respective series
+									for ( i=0; i<seriesdata.length; i++) {
+									
+		                                datapoints =  seriesdata[i].data[0];
 
 										//shift y series if dataponits are more than a value (20)
 		                            	//shift = yseries[i].data.length > 20;
