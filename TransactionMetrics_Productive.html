@@ -22,7 +22,7 @@
 		//console.log(formattedForGraph);
 		//alert(formattedForGraph.length);
 		//alert(formattedForGraph[0].data);
-    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics limit 20","avg_response");
+    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics where time > now() - 10s limit 20","avg_response");
     	//plotchart([formattedForGraph[1]],"network_throughput");
     	//plotchart([formattedForGraph[2]],"sample_summary");
 
@@ -47,8 +47,8 @@
 		
 		$.getJSON(url, function(jsondata) {
 			
-			//console.log(jsondata);		
-			
+				
+		if(jsondata.length>0){	
 		//var formattedForGraph = [];
         var sname=new Array(); //Array that Contain the name of All series !!
 		var tindex=jsondata[0].columns.indexOf("time"); // get the index of time series
@@ -91,7 +91,8 @@
            formattedForGraph.time=timeseriesToPlot;
 		   
 		   var sortedJson = _.sortBy(seriesToPlot, 'name');
-	  	   formattedForGraph.value=sortedJson; 
+	  	   formattedForGraph.value=sortedJson;
+	  	   } 
 		});
 
 		//var sortedJson = _.sortBy(formattedForGraph, 'name');
