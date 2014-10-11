@@ -14,7 +14,9 @@
     	$.ajaxSetup( { "async": false } );
 
     	//pass query to generate data and div id as where to display.
-    	plotchart("select responseTime from AggregateMetrics where time > now() - 1000000000s limit 20","avg_response");
+    	plotchart("select responseTime from AggregateMetrics where time > now() - 10h limit 20","avg_response");
+    	plotchart("select bytesReceived from AggregateMetrics where time > now() - 10h limit 20","network_throughput");
+    	plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 10h limit 20","sample_summary");
     	//plotchart([formattedForGraph[1]],"network_throughput");
 
     	$.ajaxSetup( { "async": true } );
@@ -39,10 +41,17 @@
 			if(jsondata.length>0){
 
 				for (var i = 0; i < jsondata[0].columns.length; i++) {
+
+						if(jsondata[0].columns[i].localeCompare('sequence_number') == 0 || jsondata[0].columns[i].localeCompare('time') == 0)
+							flag=false;
+						else
+							flag=true;
 					
 						var seriesToPlot = {
 						name : jsondata[0].columns[i],
-						data : []
+						data : [],
+						visible: flag,
+						showInLegend: flag
 					};
 					for (var j = 0; j < jsondata[0].points.length; j++) {
 						seriesToPlot.data.push(jsondata[0].points[j][i]);
@@ -53,6 +62,8 @@
 			}	
 
 		});
+
+		_.pluck(highchartJson, 'sequence_number');
 
 		sortedJson = _.sortBy(highchartJson, 'name');
 		//console.log(sortedJson);
@@ -112,9 +123,9 @@ function parseEpochTime(epoch)
 						valueSuffix : ''
 				},
 		   legend : {
-						layout : 'vertical',
-						align : 'right',
-						verticalAlign : 'middle',
+						//layout : 'vertical',
+						//align : 'right',
+						//verticalAlign : 'middle',
 						borderWidth : 0
 				},
     	   series : seriesdata
@@ -177,14 +188,14 @@ function parseEpochTime(epoch)
 												  //append series data with data points for respective series
 												  for ( i=0; i<seriesdata.length; i++) {
 												
-					                                datapoints =  seriesdata[i].data[0];
+						                                datapoints =  seriesdata[i].data[0];
 
-													//shift y series if dataponits are more than a value (20)
-					                            	shift = yseries[i].data.length > 20;
+														//shift y series if dataponits are more than a value (20)
+						                            	shift = yseries[i].data.length > 20;
 
-					                            	yseries[i].addPoint(datapoints, true, shift);
+						                            	yseries[i].addPoint(datapoints, true, shift);
 					                        	  }
-					  						   }
+					  						   }	
 		                       }	
 							
 	                       },5000);
@@ -198,11 +209,11 @@ function parseEpochTime(epoch)
 	<button>Show Graph</button>
 	
 	
-	 <div id="avg_response" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+	 <div id="avg_response" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
 	 
-	 <div id="network_throughput" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+	 <div id="network_throughput" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
 	 
-	 <div id="sample_summary" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+	 <div id="sample_summary" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
 	
 </body>
 </html>
