@@ -11,15 +11,15 @@
     {
 		$('button').click(function() {
 
-    	$.ajaxSetup( { "async": false } );
+    	$.ajaxSetup( { "async": true } );
 
     	//pass query to generate data and div id as where to display.
-    	plotchart("select responseTime from AggregateMetrics where time > now() - 10h limit 20","avg_response");
-    	plotchart("select bytesReceived from AggregateMetrics where time > now() - 10h limit 20","network_throughput");
-    	plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 10h limit 20","sample_summary");
+    	plotchart("select responseTime from AggregateMetrics where time > now() - 100h limit 20","avg_response");
+    	plotchart("select bytesReceived from AggregateMetrics where time > now() - 100h limit 20","network_throughput");
+    	plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 100h limit 20","sample_summary");
     	//plotchart([formattedForGraph[1]],"network_throughput");
 
-    	$.ajaxSetup( { "async": true } );
+    	//$.ajaxSetup( { "async": true } );
 		});
 
     });
@@ -87,6 +87,8 @@ function parseEpochTime(epoch)
 
 	function plotchart(query,divid){
 
+		$.ajaxSetup( { "async": false } );
+
 		//divid = '#'+divid;
 		console.log(divid);
 		var chart;
@@ -98,7 +100,7 @@ function parseEpochTime(epoch)
 	    var options = {
            chart: {
 					renderTo: divid,
-	                type: 'spline',
+	                type: 'area',
 	                animation: Highcharts.svg,
 	                marginRight: 10,
               },
