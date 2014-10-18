@@ -6,46 +6,60 @@
 <script src="http://code.highcharts.com/modules/exporting.js" type="text/javascript"></script>
 <script src="http://underscorejs.org/underscore-min.js" type="text/javascript"></script>
 
+<!-- bootstrap includes -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
   <script type="text/javascript">
     $(document).ready(function()
     {
-		$moveTime=false;
-		$('#1m').click(function() {
-			clearInterval(myVar);
-			$("#avg_response").empty();
+		$('#30m').click(function() {
+		$live=false;
+		clearInterval(myVar);
+		$("#avg_response").empty();
     	$.ajaxSetup( { "async": false } );
-    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics  where time > now() - 1m limit 20","avg_response",$moveTime);
-    	$.ajaxSetup( { "async": true } );
-		});
-		
-		$('#5m').click(function() {
-			clearInterval(myVar);
-			$("#avg_response").empty();
-    	$.ajaxSetup( { "async": false } );
-    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics  where time > now() - 5m limit 20","avg_response",$moveTime);
+    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics  where time > now() - 30m limit 20","avg_response",$live);
     	$.ajaxSetup( { "async": true } );
 		});
 		
 		$('#1h').click(function() {
-			clearInterval(myVar);
-			$("#avg_response").empty();
-    	$.ajaxSetup( { "async": false } );
-    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics  where time > now() - 1h limit 20","avg_response",$moveTime);
-    	$.ajaxSetup( { "async": true } );
-		});
-		
-		$('#all').click(function() {
+		$live=false;
 		clearInterval(myVar);
 		$("#avg_response").empty();
     	$.ajaxSetup( { "async": false } );
-    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics limit 40","avg_response",$moveTime);
+    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics  where time > now() - 1h limit 20","avg_response",$live);
     	$.ajaxSetup( { "async": true } );
 		});
 		
-		$('#cuttren').click(function() {
-			$("#avg_response").empty();
+		$('#5h').click(function() {
+		$live=false;
+		clearInterval(myVar);
+		$("#avg_response").empty();
     	$.ajaxSetup( { "async": false } );
-    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics where time > now() - 5s limit 20","avg_response",true);
+    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics  where time > now() - 5h limit 20","avg_response",$live);
+    	$.ajaxSetup( { "async": true } );
+		});
+		
+		$('#1d').click(function() {
+		$live=false;
+		clearInterval(myVar);
+		$("#avg_response").empty();
+    	$.ajaxSetup( { "async": false } );
+    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics where time > now() - 1d limit 40","avg_response",$live);
+    	$.ajaxSetup( { "async": true } );
+		});
+		
+		$('#current').click(function() {
+		$live=true;
+		$("#avg_response").empty();
+    	$.ajaxSetup( { "async": false } );
+    	plotchart("select SampleResponseTime,TransactionName  from TransactionMetrics where time > now() - 5s limit 20","avg_response",$live);
     	$.ajaxSetup( { "async": true } );
 		});
 
@@ -136,7 +150,7 @@ function parseEpochTime(epoch)
 }
 
    var myVar;
-function plotchart(query,divid,moveTime){
+   function plotchart(query,divid,live){
     titleText = "title";
 		//divid = '#'+divid;
 		console.log(divid);
@@ -272,12 +286,10 @@ function plotchart(query,divid,moveTime){
 								
 		                        }	
 							
-	                        },1000);
-							
-							
-							
+	                        },5000);
+		
 		//This condition use to stop the setInterval method.					
-		if(moveTime==false)
+		if(live==false)
 		{
 			 clearInterval(myVar);
 		}
@@ -289,18 +301,18 @@ function plotchart(query,divid,moveTime){
 
 <body>
 	
-	<button id="1m">1 min</button>
-    <button id="5m">5 min</button>
-    <button id="1h">1 Hour</button>
-    <button id="all">All</button>
-    <button id="cuttren">Current</button>
+	<button id="30m" class="btn btn-info btn-xs">30 min</button>
+    <button id="1h" class="btn btn-info btn-xs">1 hour</button>
+    <button id="5h" class="btn btn-info btn-xs">5 Hour</button>
+    <button id="1d" class="btn btn-info btn-xs">1 day</button>
+    <button id="current" class="btn btn-info btn-xs">Current</button>
 	
 	
-	 <div id="avg_response" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+	<div id="avg_response" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
 	 
-	 <div id="network_throughput" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+	<div id="network_throughput" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
 	 
-	 <div id="sample_summary" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+	<div id="sample_summary" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
 	
 </body>
 </html>
