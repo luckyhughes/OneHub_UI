@@ -6,22 +6,70 @@
 <script src="http://code.highcharts.com/modules/exporting.js" type="text/javascript"></script>
 <script src="http://underscorejs.org/underscore-min.js" type="text/javascript"></script>
 
+<!-- bootstrap includes -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
   <script type="text/javascript">
     $(document).ready(function()
     {
-		$('button').click(function() {
-
-    	$.ajaxSetup( { "async": true } );
-
-    	//pass query to generate data and div id as where to display.
-    	plotchart("select responseTime from AggregateMetrics where time > now() - 100h limit 20","avg_response");
-    	plotchart("select bytesReceived from AggregateMetrics where time > now() - 100h limit 20","network_throughput");
-    	plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 100h limit 20","sample_summary");
-    	//plotchart([formattedForGraph[1]],"network_throughput");
-
-    	//$.ajaxSetup( { "async": true } );
+		$('#30m').click(function() {
+			$live=false;
+			clearInterval(myVar);
+			$("#avg_response").empty();
+	    	$.ajaxSetup( { "async": false } );
+	    	plotchart("select responseTime from AggregateMetrics where time > now() - 30m limit 20","avg_response",$live);
+	    	plotchart("select bytesReceived from AggregateMetrics where time > now() - 30m limit 20","network_throughput",$live);
+	    	plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 30m limit 20","sample_summary",$live);
+	    	$.ajaxSetup( { "async": true } );
 		});
 
+		$('#1h').click(function() {
+			$live=false;
+			clearInterval(myVar);
+			$("#avg_response").empty();
+	    	$.ajaxSetup( { "async": false } );
+	    	plotchart("select responseTime from AggregateMetrics where time > now() - 1h limit 20","avg_response",$live);
+		    plotchart("select bytesReceived from AggregateMetrics where time > now() - 1h limit 20","network_throughput",$live);
+		    plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 1h limit 20","sample_summary",$live);
+    	$.ajaxSetup( { "async": true } );
+		});
+		
+		$('#5h').click(function() {
+			$live=false;
+			clearInterval(myVar);
+			$("#avg_response").empty();
+	    	$.ajaxSetup( { "async": false } );
+	    	plotchart("select responseTime from AggregateMetrics where time > now() - 5h limit 20","avg_response",$live);
+		    plotchart("select bytesReceived from AggregateMetrics where time > now() - 5h limit 20","network_throughput",$live);
+		    plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 5h limit 20","sample_summary",$live);
+	    	$.ajaxSetup( { "async": true } );
+		});
+		
+		$('#1d').click(function() {
+			$live=false;
+			clearInterval(myVar);
+			$("#avg_response").empty();
+	    	$.ajaxSetup( { "async": false } );
+	    	plotchart("select responseTime from AggregateMetrics where time > now() - 1d limit 20","avg_response",$live);
+		    plotchart("select bytesReceived from AggregateMetrics where time > now() - 1d limit 20","network_throughput",$live);
+		    plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 1d limit 20","sample_summary",$live);
+	    	$.ajaxSetup( { "async": true } );
+		});
+		
+		$('#current').click(function() {
+			$live=true;
+			$("#avg_response").empty();
+	    	$.ajaxSetup( { "async": false } );
+	    	plotchart("select responseTime from AggregateMetrics where time > now() - 300h limit 20","avg_response",$live);
+		    plotchart("select bytesReceived from AggregateMetrics where time > now() - 300h limit 20","network_throughput",$live);
+		    plotchart("select countTotalThread,countSuccessSample,countNonSuccessSample from AggregateMetrics where time > now() - 300h limit 20","sample_summary",$live);
+	    	$.ajaxSetup( { "async": true } );
+		});
     });
  </script>
  
@@ -85,7 +133,8 @@ function parseEpochTime(epoch)
 	return time;
 }
 
-	function plotchart(query,divid){
+	var myVar;
+	function plotchart(query,divid,live){
 
 		$.ajaxSetup( { "async": false } );
 
@@ -149,7 +198,7 @@ function parseEpochTime(epoch)
 		}
 		  
 	var counter=0;
-	setInterval(function () {
+	myVar=	setInterval(function () {
 								
 							$.ajaxSetup( { "async": false } );
 
@@ -201,21 +250,29 @@ function parseEpochTime(epoch)
 		                       }	
 							
 	                       },5000);
+
+		    //This condition use to stop the setInterval method.					
+			if(live==false)
+			{
+				 clearInterval(myVar);
+			}
+
 		}
 	</script>
     
  </head>  
 
 <body>
+
+	<button id="30m" class="btn btn-info btn-xs">30 min</button>
+    <button id="1h" class="btn btn-info btn-xs">1 hour</button>
+    <button id="5h" class="btn btn-info btn-xs">5 Hour</button>
+    <button id="1d" class="btn btn-info btn-xs">1 day</button>
+    <button id="current" class="btn btn-info btn-xs">Current</button>
 	
-	<button>Show Graph</button>
-	
-	
-	 <div id="avg_response" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
-	 
-	 <div id="network_throughput" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
-	 
-	 <div id="sample_summary" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
+	<div id="avg_response" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
+	<div id="network_throughput" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
+	<div id="sample_summary" style="min-width: 400px; height: 250px; margin: 0 auto"></div>
 	
 </body>
 </html>
