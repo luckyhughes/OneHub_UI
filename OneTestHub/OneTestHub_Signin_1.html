@@ -16,28 +16,34 @@
 
 <body>
 <div class="container-fluid">
-  <form action="#" method="post" >
+ <form action="#" method="post" >
     <div class="row thumbnail " >
-         <div class="col-md-3 col-md-offset-1"><!-- start: Logo Image -->
+         <div class="col-md-3  col-sm-12 col-md-offset-1"><!-- start: Logo Image -->
                                 <a href="#" title="Home page"><img alt=
                                 "OneTestHub" class=
                                 "site-logo image-style-none" src="static/logo/OneTestHub_Logo.png"></a>
                             <!-- /end: #logo -->
          </div>
-    <div class="col-md-2 col-xs-offset-3">
+    <div class="col-md-2 col-xs-10 col-xs-push-1  col-md-offset-2   ">
        <div class="form-group">
          <b>Email Address</b> <br /><input type="text" name="email"  class="form-control" /> 
       </div>
    </div>
   
-  <div class="col-md-2">
+  <div class="col-md-2 col-xs-10  col-xs-push-1">
          <div class="form-group">
+        
              <b>Password</b> 
-             <small><a href="#" title="Forgot Password">Forgot your password ?</a> </small> <br />
-             <input type="text"  name="password"  class="form-control" />
+         
+            <br />	
+             
+           
+             <input type="text"  name="email"  class="form-control" />
+             
+            <small><a href="#" title="Forgot Password">Forgot Your password ?</a> </small>
          </div>
   </div>
-     <div class="col-md-1 "><br /><input id="login" type="submit"  value="Login"  class="btn btn-default btn-xs btn-primary"  /></div>  
+     <div class="col-md-1 col-xs-10 col-xs-push-1 "><br />  <input id="login" type="submit"  value="Login"  class="btn btn-default btn-xs btn-primary"  /> </div>  
 </div>
 
 </form>
@@ -60,14 +66,14 @@
 <div class="form-area sign-up">
 
 	<div class="row">
-    <div class="col-sm-12 header">
-    	<h2 class="hidden-xs">Sign Up</h2>
+    <div class="col-sm-12 header text-center">
+    	<h2 >Sign Up</h2>
      
     </div>
   </div>
 
 	<div class="main-block" id="account">                             
-		<form action="#" role="form" method="POST" id="registration-form">
+		<form action="#" role="form" method="POST" id="registration-form" >
 			
 			
 			<div class="row">
@@ -118,16 +124,14 @@
 				
 			</div>
 
-			<input autocomplete="off" name='signupSource' type="hidden" value="Community" placeholder="signupSource"/>   
+		
 			
-			<!-- Insightera Fields -->
-			<input name="Industry" id="Industry" type="hidden" value="">
-			<input name="MainPhone" id="MainPhone" type="hidden" value="">
+		
 
 			<div class="row">
 		      <div class="col-md-12 submit-button">
 		        <div class="action-wrapper">
-		          <input id="submitButton" value="Sign Up">
+		          <input type="button"  id="submitButton" value="Sign Up">
 		        </div>
 		      </div>
 		    </div>
@@ -138,7 +142,7 @@
        </div></div></div> </div></div>
        </div>
 <!-- Footer Start-->
-<div class="navbar  navbar-default navbar-fixed-bottom" role="navigation"  >
+<div class="navbar  navbar-default navbar-fixed-bottom hidden-xs hidden-sm" role="navigation"  >
      <div class="container">
          <div class="navbar-text pull-left">
              <p> Copyright © - 2014 OneTestHub. All Rights Reserved.</p>
@@ -168,6 +172,8 @@
 
 <script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="static/js/validate.js"></script>
+<script src="static/js/utils.js"></script>
 
 </body>
 </html>
